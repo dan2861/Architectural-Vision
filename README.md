@@ -139,7 +139,7 @@ metrics/
 
 ---
 
-## 9  Timeline (4‑week sprint)
+## 9  Timeline (2‑week sprint)
 | Week | Deliverable |
 |------|-------------|
 | 1 | Dataset ready; baseline ResNet‑GAP features extracted |
@@ -150,7 +150,7 @@ metrics/
 ---
 
 ### Next Action
-1. Clone repo skeleton: `git clone ... && cd yale‑style‑classifier`.  
+1. Clone repo skeleton: `git clone ... && cd Architectural-Vision`.  
 2. Start **Task 1** (`build_dataset.py`) today; once raw images are in place, Tasks 2‑3 can run in parallel on a laptop GPU or Colab.
 
 Feel free to adapt filenames or swap any library (e.g., TensorFlow instead of PyTorch) as long as the artefact contract—images → `.npz` → `model.pkl`—stays fixed.
