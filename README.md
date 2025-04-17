@@ -140,10 +140,10 @@ metrics/
 ---
 
 ## 9  Timeline (2‑week sprint)
-Week | Deliverable
-1 | Dataset ready; baseline ResNet‑GAP features extracted. All pooling variants implemented; first accuracy numbers.
-2 | Full hyper‑param sweep; best model frozen; failure analysis. Write‑up, plots, code refactor, “top‑k mistakes” appendix.
-
+| Week | Deliverable |
+|------|-------------|
+| 1 | Dataset ready; baseline ResNet‑GAP features extracted. All pooling variants implemented; first accuracy numbers.|
+| 2 | Full hyper‑param sweep; best model frozen; failure analysis. Write‑up, plots, code refactor, “top‑k mistakes” appendix. |
 ---
 
 ### Next Action
