@@ -143,9 +143,9 @@ metrics/
 | Week | Deliverable |
 |------|-------------|
 | 1 | Dataset ready; baseline ResNet‑GAP features extracted |
-| 2 | All pooling variants implemented; first accuracy numbers |
-| 3 | Full hyper‑param sweep; best model frozen; failure analysis |
-| 4 | Write‑up, plots, code refactor, “top‑k mistakes” appendix |
+      All pooling variants implemented; first accuracy numbers |
+| 2 | Full hyper‑param sweep; best model frozen; failure analysis |
+      Write‑up, plots, code refactor, “top‑k mistakes” appendix |
 
 ---
 
