@@ -1,4 +1,7 @@
-# Architectural-Vision
+Below is a self‑contained **Design & Implementation Plan** that folds together every idea we have covered so far, assuming you will **skip purely hand‑crafted features** and focus on pre‑trained CNN feature bases (with optional dimensionality reduction) plus classical classifiers. I have written it as a living document you can copy into a repo’s `DESIGN_DOC.md`.
+
+---
+
 ## 1  Project Overview
 - **Objective** Classify photographs of Yale buildings into **Gothic, Brutalist, or Colonial** styles.  
 - **Method** Use *frozen* convolutional networks as universal feature extractors, then train lightweight, interpretable classifiers on those features.  
@@ -139,13 +142,12 @@ metrics/
 
 ---
 
-## 9  Timeline (4‑week sprint)
+## 9  Timeline (2‑week sprint)
 | Week | Deliverable |
 |------|-------------|
-| 1 | Dataset ready; baseline ResNet‑GAP features extracted |
-      All pooling variants implemented; first accuracy numbers |
-| 2 | Full hyper‑param sweep; best model frozen; failure analysis |
-      Write‑up, plots, code refactor, “top‑k mistakes” appendix |
+| 1 | Dataset ready; baseline ResNet‑GAP features extracted. All pooling variants implemented; first accuracy numbers.|
+| 2 | Full hyper‑param sweep; best model frozen; failure analysis. Write‑up, plots, code refactor, “top‑k mistakes” appendix. |
+
 
 ---
 
