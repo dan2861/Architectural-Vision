@@ -16,10 +16,11 @@ By leveraging a pretrained **ResNet-50** CNN as a frozen feature extractor and t
 
 | Name | Role |
 |------|------|
-| Daniel Metaferia | Lead Developer, ML Engineer |
-| Nour Darragi | Data Engineer, Preprocessing |
 | Brian Di Bassinga | Model Evaluation, Visualization |
+| Daniel Metaferia | Deep Feature Extraction, Model Training |
 | Mike Masamvu | Data Collection, Augmentation |
+| Nour Darragi | Preprocessing, Model Training|
+
 
 ---
 
@@ -33,7 +34,7 @@ Each step of the workflow is modularized in separate notebooks for clarity and r
 | `02_augment.ipynb` | Performs deterministic augmentations (flip, rotate, scale) to improve generalization. |
 | `03_deep_features.ipynb` | Extracts deep features using frozen ResNet-50 and applies PCA for dimensionality reduction. |
 | `04_train_models.ipynb` | Trains and evaluates multiple classifiers: CNN, Logistic Regression, Perceptron, and SVM. |
-| `05_visualize_results.ipynb` *(optional)* | Generates confusion matrices, t-SNE visualizations, and accuracy reports. |
+| `05_visualize_results.ipynb` | Generates confusion matrices, t-SNE visualizations, and accuracy reports. |
 
 📎 **Dataset Folder Structure**
 ```
