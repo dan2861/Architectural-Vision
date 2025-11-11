@@ -1,158 +1,169 @@
-Below is a self‑contained **Design & Implementation Plan** that folds together every idea we have covered so far, assuming you will **skip purely hand‑crafted features** and focus on pre‑trained CNN feature bases (with optional dimensionality reduction) plus classical classifiers. I have written it as a living document you can copy into a repo’s `DESIGN_DOC.md`.
+# 🏛️ Architectural-Vision: Classifying Yale Architecture Using Machine Learning
+
+> A machine learning project that classifies Yale campus buildings into **Gothic**, **Brutalist**, or **Colonial** architectural styles using deep feature extraction from pretrained CNNs and lightweight classifiers.
 
 ---
 
-## 1  Project Overview
-- **Objective** Classify photographs of Yale buildings into **Gothic, Brutalist, or Colonial** styles.  
-- **Method** Use *frozen* convolutional networks as universal feature extractors, then train lightweight, interpretable classifiers on those features.  
-- **Success target** ≥ 60 % accuracy on a held‑out Yale‑photo test set, with confusion‑matrix insights into typical style confusions.
+## 📘 Overview
+
+Yale University’s campus features a rich blend of architectural styles that define its cultural and historical character. This project explores how **machine learning**—specifically **transfer learning** and **classical classification techniques**—can automatically distinguish between these architectural types based on images.
+
+By leveraging a pretrained **ResNet-50** CNN as a frozen feature extractor and training a **Support Vector Machine (SVM)** classifier on deep feature embeddings, this project demonstrates a hybrid approach combining **deep learning feature richness** with **classical model interpretability**.
 
 ---
 
-## 2  Data Pipeline
-### 2.1 Sources  
-1. **Kaggle Architecture Styles** – filtered to the three target classes.  
-2. **Your own Yale photos** – at least 30 – 40 per class, taken under varied lighting.
+## 👥 Contributors
 
-### 2.2 Curation & Storage  
+| Name | Role |
+|------|------|
+| Daniel Metaferia | Lead Developer, ML Engineer |
+| Nour Darragi | Data Engineer, Preprocessing |
+| Brian Di Bassinga | Model Evaluation, Visualization |
+| Mike Masamvu | Data Collection, Augmentation |
+
+---
+
+## 📂 Project Structure
+
+Each step of the workflow is modularized in separate notebooks for clarity and reproducibility:
+
+| File | Description |
+|------|--------------|
+| `01_build_dataset.ipynb` | Mounts dataset, organizes files, and builds `metadata.csv` mapping image paths to labels. |
+| `02_augment.ipynb` | Performs deterministic augmentations (flip, rotate, scale) to improve generalization. |
+| `03_deep_features.ipynb` | Extracts deep features using frozen ResNet-50 and applies PCA for dimensionality reduction. |
+| `04_train_models.ipynb` | Trains and evaluates multiple classifiers: CNN, Logistic Regression, Perceptron, and SVM. |
+| `05_visualize_results.ipynb` *(optional)* | Generates confusion matrices, t-SNE visualizations, and accuracy reports. |
+
+📎 **Dataset Folder Structure**
 ```
 data/
-  train/
-    gothic/…
-    brutalist/…
-    colonial/…
-  yale_test/
-    gothic/…
-    brutalist/…
-    colonial/…
+│
+├── kaggle_dataset/          # Source training data
+├── yale_images/             # Collected test images
+├── augmented/               # Generated augmentations
+└── metadata.csv             # Image path-to-label mapping
 ```
 
-### 2.3 Augmentation Strategy  
-- **Always**: horizontal flip, ±10° rotation, random 0.8 – 1.2 scaling.  
-- **When domain mismatch shows**: CLAHE or histogram equalisation.  
-> Keep augmentation identical for all later experiments so results are comparable.
+---
+
+## 🧠 Methodology
+
+### 1. Problem Definition  
+A supervised image classification task:  
+**Input:** Image of a Yale building  
+**Output:** Predicted architectural style – *Gothic*, *Brutalist*, or *Colonial*  
+
+### 2. Data Collection & Preprocessing  
+- **Training Data:** Kaggle Architecture Styles dataset ([link](https://www.kaggle.com/datasets/wwymak/architecture-dataset))  
+- **Testing Data:** Hand-collected Yale campus images (resized to 224×224)  
+- **Augmentations:** Horizontal flips, small rotations, scaling  
+- **Normalization:** ImageNet mean `[0.485, 0.456, 0.406]` and std `[0.229, 0.224, 0.225]`  
+
+### 3. Feature Extraction  
+- **Backbone:** `ResNet-50` pretrained on ImageNet  
+- **Modification:** Removed final layers → applied **Global Average Pooling (GAP)**  
+- **Dimensionality Reduction:** PCA (retain 95% variance or 128 components)  
+
+### 4. Classifier Training  
+- **Model:** Support Vector Machine (SVM)  
+- **Hyperparameters:**  
+  - Kernel = {Linear, RBF}  
+  - Regularization `C ∈ {0.01, 0.1, 1, 10, 100}`  
+  - GridSearchCV with Stratified 5-fold cross-validation  
+- **Optimization:** Multi-class hinge loss with L₂ regularization  
+
+### 5. Evaluation Metrics  
+- Overall accuracy  
+- Per-class precision, recall, and F₁-score  
+- Confusion matrix visualization  
+- t-SNE for embedding separability  
 
 ---
 
-## 3  Feature‑Extraction Architecture
+## 📊 Results
+
+| Metric | Value |
+|---------|-------|
+| **Overall Test Accuracy** | **58%** |
+| **Best Performing Class** | Brutalist |
+| **Most Confused Class** | Gothic |
+
+**Observations:**
+- The model correctly classified most *Brutalist* and *Colonial* samples.
+- *Gothic* images were frequently misclassified—indicating overlapping visual cues or limited samples.
+- Confusion analysis suggests that **data imbalance** and **architectural overlap** remain the main challenges.
+
+---
+
+## ⚙️ Implementation Details
+
+- **Frameworks:** PyTorch, scikit-learn, NumPy, OpenCV, Matplotlib  
+- **Feature Extractors Tested:** ResNet-50, VGG-16, MobileNetV2  
+- **Dimensionality Reduction:** scikit-learn PCA  
+- **Classifier:** Linear & RBF SVM (best performer)  
+- **Evaluation Tools:** Confusion matrix, t-SNE plot, cross-validation metrics  
+
+---
+
+## 🧩 Key Insights
+
+- **Transfer Learning** offers a strong starting point even with limited domain-specific data.  
+- **Feature interpretability** improves when combining deep CNN embeddings with classical classifiers like SVM.  
+- **Augmentation** meaningfully boosts generalization when real-world variability (lighting, obstructions, etc.) is limited.  
+- **Data imbalance** must be carefully addressed—especially for nuanced categories like Gothic architecture.  
+
+---
+
+## 🚀 Future Improvements
+
+- Fine-tune CNN layers instead of fully freezing weights  
+- Expand dataset with more Yale-specific images  
+- Apply **data balancing** techniques (e.g., SMOTE or class-weighted loss)  
+- Introduce **explainability methods** (Grad-CAM, SHAP) to visualize architectural features influencing predictions  
+- Deploy the trained model in a **React-based web demo** or **mobile app** for on-campus use  
+
+---
+
+## 🧭 Setup & Usage
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/<yourusername>/Architectural-Vision.git
+cd Architectural-Vision
 ```
-image (RGB, 224×224)
-   │
-   ▼
-┌─────────────┐   ResNet‑50 / VGG16 / MobileNetV2  (weights frozen)
-│ conv layers │──► feature map  (C×H×W)
-└─────────────┘
-   │
-   ├─ Option A: Global Average Pooling   →  C‑dim vector
-   ├─ Option B: Max Pooling              →  C‑dim vector
-   ├─ Option C: Covariance (Gram) Pool   →  C(C+1)/2  upper‑tri
-   └─ Option D: Bag‑of‑Deep‑Features     →  k‑dim histogram
+
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
 ```
 
-**Dimensionality control** (choose at run‑time):  
-- **None** keep raw vector.  
-- **PCA–95 % var** retain as many components as needed for 95 % variance.  
-- **Fixed 128‑D** for extreme compactness / k‑NN speed.
+### 3. Download Dataset
+Get the full dataset and preserve folder structure:  
+🔗 [Project Data Folder](https://drive.google.com/drive/folders/1ka4ALNQunVQw7EMxK-er9WIi_62UIitJ?usp=sharing)
 
-All variants are written to `.npz` with identical ordering so they can be concatenated or swapped in later.
-
----
-
-## 4  Model Layer
-For every feature variant:
-
-| Model           | Hyper‑params            | Notes |
-|-----------------|-------------------------|-------|
-| Linear SVM      | C ∈ {0.1, 1, 10}       | Fast baseline |
-| RBF‑SVM         | C, γ log‑grid          | Use after PCA; γ sensitive to dim |
-| Logistic Reg.   | C ∈ {0.1, 1, 10}       | Gives calibrated probs |
-| k‑NN            | k ∈ {1, 3, 5}          | Cosine distance after ℓ2‑norm |
-| MLP (1 layer)   | hidden {64,128}, α=1e‑4| Keep tiny to avoid over‑fit |
-
-All hyper‑parameter grids are searched with **stratified 5‑fold CV on Kaggle** only. Final model is frozen, then evaluated once on the Yale test split.
-
----
-
-## 5  Evaluation Suite
+### 4. Run Pipeline
+Execute the notebooks in order:
 ```
-metrics/
-  accuracy.txt
-  classification_report.json
-  confusion_matrix.png
-  tsne_2d.png
+01_build_dataset.ipynb → 02_augment.ipynb → 03_deep_features.ipynb → 04_train_models.ipynb
 ```
-- **Primary** Accuracy.  
-- **Insight** Confusion matrix; macro F1.  
-- **Visual** t‑SNE of each best‑performing feature space, colour‑coded by label, to sanity‑check separability.
 
 ---
 
-## 6  Implementation Road‑Map (single‑threaded but modular)
-1. **Dataset builder (`build_dataset.py`)**  
-   - Download / copy sources, enforce directory schema, write `metadata.csv`.
+## 🧾 References
 
-2. **Augmentation runner (`augment.py`)**  
-   - Save augmented images beside originals; use deterministic seeds.
-
-3. **Feature extractor (`deep_features.py`)**  
-   - CLI flags: `--arch`, `--pool`, `--pca` (`none|95var|128`), `--split train/yale_test`.  
-   - Outputs: `features/{split}_{arch}_{pool}_{pca}.npz`.
-
-4. **Model trainer (`train.py`)**  
-   - Loads `.npz`; runs grid search; saves `model.pkl` + CV scores.
-
-5. **Evaluator (`evaluate.py`)**  
-   - Loads frozen model; reports metrics; writes plots.
-
-6. **Experiment driver (`run_experiments.sh`)**  
-   - Bash or Makefile enumerating feature‑arch‑pool combinations:
-     ```
-     for arch in resnet50 vgg16 mobilenetv2; do
-       for pool in gap gmp gram bodf; do
-         for pca in none 95var 128; do
-             python deep_features.py --arch $arch --pool $pool --pca $pca
-             python train.py --features $fname
-         done
-       done
-     done
-     ```
-
-7. **Result aggregator (`summarise.py`)**  
-   - Combines all `accuracy.txt` into a CSV leaderboard, highlights top‑k.
+- Kaggle Architecture Styles Dataset: [wwymak/architecture-dataset](https://www.kaggle.com/datasets/wwymak/architecture-dataset)  
+- He, K. et al. *Deep Residual Learning for Image Recognition*, CVPR 2016.  
+- Scikit-learn documentation: [https://scikit-learn.org/](https://scikit-learn.org/)  
+- PyTorch documentation: [https://pytorch.org/](https://pytorch.org/)
 
 ---
 
-## 7  Decision Points & Scenarios
-| If you… | …then do this | Rationale |
-|---------|---------------|-----------|
-| **Need faster training** | Use MobileNetV2 + GAP + PCA‑128 | 128‑D vectors train SVMs in milliseconds |
-| **Care about texture detail** | Try Gram pooling before PCA | Captures pairwise filter co‑activation useful for masonry vs. concrete |
-| **See over‑fit** | Increase PCA compression **and** use L2‑regularised Logistic Regression | Reduces variance and keeps interpretability |
-| **Accuracy plateaus < 60 %** | Fuse *two* architectures (concat ResNet‑GAP + VGG‑Gram) before PCA | Heterogeneous features often boost discriminative power |
-| **Need interpretability for report** | Stick to ResNet‑GAP, Linear SVM, and use **grad‑CAM** on the conv maps | Provides heatmaps of building parts influencing decisions |
+## 📸 Sample Results (Optional to Add)
 
----
+You can add confusion matrices or sample predictions as images, e.g.:
 
-## 8  Risks & Mitigations
-| Risk | Impact | Mitigation |
-|------|--------|-----------|
-| Legal limits on Google Street View | Training data unusable | Use only self‑captured or CC‑licensed images |
-| Domain shift (ImageNet → Yale photos) | Poor generalisation | Histogram equalisation; add colour‑jitter during augmentation |
-| Small Yale test set | High variance in metrics |  Bootstrap confidence intervals or collect more photos |
-
----
-
-## 9  Timeline (2‑week sprint)
-| Week | Deliverable |
-|------|-------------|
-| 1 | Dataset ready; baseline ResNet‑GAP features extracted. All pooling variants implemented; first accuracy numbers.|
-| 2 | Full hyper‑param sweep; best model frozen; failure analysis. Write‑up, plots, code refactor, “top‑k mistakes” appendix. |
-
-
----
-
-### Next Action
-1. Clone repo skeleton: `git clone ... && cd yale‑style‑classifier`.  
-2. Start **Task 1** (`build_dataset.py`) today; once raw images are in place, Tasks 2‑3 can run in parallel on a laptop GPU or Colab.
-
-Feel free to adapt filenames or swap any library (e.g., TensorFlow instead of PyTorch) as long as the artefact contract—images → `.npz` → `model.pkl`—stays fixed.
+```markdown
+![Confusion Matrix](images/confusion_matrix.png)
+![t-SNE Visualization](images/tsne_plot.png)
+```
